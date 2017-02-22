@@ -3,61 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
-    <script src="https://unpkg.com/vue@2.1.10/dist/vue.js"></script>
+    <script src="vue.js"></script>
     <link rel="stylesheet" href="./index.css">
 </head>
 <body>
-<section class="todoapp">
-<header class="header">
-    <h1>todos</h1>
-    <input 
-        type="text" 
-        autofocus 
-        v-test:hello.a.c='addTodo'
-        autocomplete="off" 
-        v-model="newTodo" 
-        @keyup.enter="addTodo" 
-        class="new-todo"
-        placeholder="what needs to be done?"
-        >
-</header>
-<section class="main" v-show="todos.length" v-cloak>
-    <input type="checkbox" v-model="allDone" class="toggle-all">
-    <ul class="todo-list">
-        <li 
-            v-for="todo in filteredTodos"
-            :key="todo.id"
-            :class="{completed:todo.completed,editing:todo==editedTodo}"
-            class="todo">
-            <div class="view">
-                <input type="checkbox" class="toggle" v-model="todo.completed">
-                <label for="">{{todo.title}}</label>
-                <button class="destroy" @click="removeTodo(todo)"></button>
-            </div>
-            <input type="text" v-model="todo.title" class="edit"
-                v-todo-focus="todo==editedTodo"
-                @blur="doneEdit(todo)"
-                @keyup.enter="doneEdit(todo)"
-                @keyup.esc="cancelEdit(todo)"
-            >
-        </li>
-    </ul>
-</section>
-<footer class="footer" v-show="todos.length">
-    <span class="todo-count">
-        <strong>{{remaining}}</strong>
-        {{remaining | pluralize}}left
-    </span>
-    <ul class="filters">
-        <li><a href="#/all" :class="{selected:visibility=='all'}">All</a></li>
-        <li><a href="#/active" :class="{selected:visibility='active'}">Active</a></li>
-    </ul>
-    <button class="clear-completed" @click="removeCompleted" v-show="todos.length>remaining">clear completed</button>
-</footer>
-<footer class="info">
 
-</footer>
+<!--todoapp-->
+<section class="todoapp">
+    <header class="header">
+        <h1 v-cclick="()=>testClick()">todos</h1>
+        <input 
+            type="text" 
+            autofocus 
+            v-test:hello.a.c='addTodo'
+            autocomplete="off" 
+            v-model="newTodo" 
+            @keyup.enter="addTodo" 
+            class="new-todo"
+            placeholder="what needs to be done?"
+            >
+    </header>
+    <section class="main" v-show="todos.length" v-cloak>
+        <input  v-model="allDone" class="toggle-all" type="checkbox">
+        <ul class="todo-list">
+            <li 
+                v-for="todo in filteredTodos"
+                :key="todo.id"
+                :class="{completed:todo.completed,editing:todo==editedTodo}"
+                class="todo">
+                <div class="view">
+                    <input type="checkbox" class="toggle" v-model="todo.completed">
+                    <label for="" @dblclick="editTodo(todo)">{{todo.title}}</label>
+                    <button class="destroy" @click="removeTodo(todo)"></button>
+                </div>
+                <input type="text" v-model="todo.title" class="edit"
+                    v-todo-focus="todo==editedTodo"
+                    @blur="doneEdit(todo)"
+                    @keyup.enter="doneEdit(todo)"
+                    @keyup.esc="cancelEdit(todo)"
+                >
+            </li>
+        </ul>
+    </section>
+    <footer class="footer" v-show="todos.length">
+        <span class="todo-count">
+            <strong>{{remaining}}</strong>
+            {{remaining | pluralize}} left
+        </span>
+        <ul class="filters">
+            <li><a href="#/all" :class="{selected:visibility=='all'}">All</a></li>
+            <li><a href="#/active" :class="{selected:visibility=='active'}">Active</a></li>
+        </ul>
+        <button class="clear-completed" @click="removeCompleted" v-show="todos.length>remaining">clear completed</button>
+    </footer>
 </section>
+<!--testApp-->
 <section class='test'>
     <h1 
     

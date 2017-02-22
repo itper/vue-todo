@@ -1,5 +1,6 @@
 var STORAGE_KEY = 'todos-vuejs-2.0';
 var todos;
+//简单分钟下storage
 var todoStorage = {
     fetch:function(){
         var todos = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
@@ -13,6 +14,7 @@ var todoStorage = {
         localStorage.setItem(STORAGE_KEY,JSON.stringify(todos));
     }
 }
+//工具函数,注意这里不对todos内容进行修改.只是返回执行结果.
 var filters = {
     all:function(todos){
         return todos;
@@ -38,6 +40,7 @@ var app = new Vue({
         newTodo:'',
         editedTodo:null,
         visibility:'all',
+        remanining1:'',
     },
     //在数据变化的同时提供watch观察者,handler为回调函数,还有其他一些参数
     watch:{
@@ -48,22 +51,38 @@ var app = new Vue({
             },
             //对象自己的值得变化,(数组变动不需要)
             deep:true
+        },
+        visibility:function(v){
+            console.log('v ',v);
         }
     },
     //计算属性,可以当做一组提供getter方法的数据对象.只是会做缓存
     //通过属性访问器访问.
+    //也可以像data数据对象一样,通过v-model绑定
+    //默认只有setter方法,当绑定到model中的时候,随着输入的变化,也会调用setter方法.如果setter/getter中依赖/设置了data中的数据,则getter也会调用
     computed:{
+        //计算属性,vue将this.visibility作为依赖,当其修改时,计算属性的会重新调用.
         filteredTodos:function(){
+            console.log('get',filters[this.visibility](this.todos));
             return filters[this.visibility](this.todos)
         },
+        //依赖todos自身内容的变化,filteredTodos计算属性不会触发此计算.
         remaining:function(){
+            // console.log(filters.active(this.todos).length);
             return filters.active(this.todos).length;
         },
+        //通过v-model和外部的输入框进行绑定,这的输入框是个单选框,当单选框变化是,会调用set,this.remaining会触发一下计算
         allDone:{
+            //get依赖的内容变化,就会触发计算,但是计算后不会触发set
             get:function(){
-                return this.remanining === 0;
+                console.log('get ',this.remaining);
+                return !this.remaining;
             },
+            //只有输入才会触发set
             set:function(value){
+                console.log('set',value);
+                // this.remanining1 = value+'-';
+                // return;
                 this.todos.forEach(function(todo){
                     todo.completed = value;
                 })
@@ -94,7 +113,7 @@ var app = new Vue({
         removeTodo:function(todo){
             this.todos.splice(this.todos.indexOf(todo),1)
         },
-        editedTodo:function(todo){
+        editTodo:function(todo){
             this.beforeEditCache = todo.title;
             this.editedTodo = todo;
         },
@@ -108,11 +127,15 @@ var app = new Vue({
                 this.removeTodo(todo);
             }
         },
+        testClick:function(){
+            console.log('test click');
+        },
         cancelEdit:function(todo){
             this.editedTodo = null;
             todo.title = this.beforeEditCache;
         },
         removeCompleted:function(){
+            //对于那些不能修改数组自身的操作,需要对数据进行重新赋值,这里使用filter不能修改数组的内容.
             this.todos = filters.active(this.todos);
         }
     },
@@ -140,6 +163,16 @@ var app = new Vue({
         },
         'test':function(el,binding){
             console.log(binding);
+        },
+        //自定义一个事件指令.
+        //和系统定义的不同的是,系统在解析到v-on的时候回将value包装到一个函数中,等待事件点击后再执行.
+        //而自定义的指令,vue在构建的时候,直接处理,如果是函数调用,就直接调用了,所以如果想等待点击后调用,需要放到函数中
+        'cclick':{
+            bind: function(el,binding){
+                el.addEventListener('click',()=>{
+                    binding.value();
+                })
+            }
         }
     }
 })
@@ -155,6 +188,9 @@ function onHashChange(){
 window.addEventListener('hashchange',onHashChange);
 app.$mount('.todoapp');
 
+/**
+ * app
+ */
 var testApp = new Vue({
     el:'.test',
     data:{
